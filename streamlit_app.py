@@ -15,6 +15,8 @@
 import inspect
 import textwrap
 from collections import OrderedDict
+import nltk
+nltk.download('stopwords')
 
 import streamlit as st
 from streamlit.logger import get_logger
