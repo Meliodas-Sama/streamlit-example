@@ -16,13 +16,14 @@ import inspect
 import textwrap
 from collections import OrderedDict
 import nltk
-nltk.download('stopwords')
 
 import streamlit as st
 from streamlit.logger import get_logger
 import pages
 
 LOGGER = get_logger(__name__)
+
+nltk.download('stopwords')
 
 # Dictionary of
 # page_name -> (page_function, page_description)
