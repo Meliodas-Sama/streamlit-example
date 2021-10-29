@@ -1,5 +1,5 @@
-altair
+nltk
 pandas
 streamlit
 numpy
-nltk
+regex
