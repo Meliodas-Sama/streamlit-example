@@ -1,6 +1,7 @@
 import streamlit as st
+from streamlit.legacy_caching.caching import cache
 
-def clean(text,lang = 'English'):
+def clean(text,lang):
     """
     clean the text by:
     1. lowering the letter case
@@ -37,8 +38,9 @@ def clean(text,lang = 'English'):
         text = text.strip()
         return text
 
-def getStopWordsAndStemmer(lang='English'):
-    from nltk import ISRIStemmer, PorterStemmer, WordNetLemmatizer
+@st.cache
+def getStopWordsAndStemmer(lang):
+    from nltk import ISRIStemmer, PorterStemmer
     from nltk.corpus import stopwords
     
     if lang.lower() == 'english':
@@ -52,7 +54,7 @@ def getStopWordsAndStemmer(lang='English'):
         stop_words = set(stop_words + stopwords.words(lang))
     return stemmer, stop_words
 
-def stem_text(data,lang='English'):
+def stem_text(data,lang):
     """
     1. Initialize Word Net Lemmatizer
     2. Get stop words and Stemmer for the given language
@@ -87,11 +89,47 @@ def unique_terms(documents):
 
 @st.cache
 def get_data(file):
+    """
+    Get data from the given dataFrame file/URL
+    """
     import pandas as pd
-    dataf = pd.read_csv(file)
+    dataf = pd.read_csv(file,encoding='utf8')
     dataf.columns = ['Questions', 'Answers']
     dic = dataf.to_dict()
     ques  = list(dic['Questions'].values())
     ans = list(dic['Answers'].values())
     data = [ques[i]+' '+ans[i] for i in range(len(ans)) ]
     return ques, ans, data
+
+def checkBoolQuery(query):
+    """
+    Check if the given query syntax is valid
+    """
+    while ('not' in query):
+        i = query.index('not')
+        if i+1 == len(query):
+            return False
+        if query[i+1] in ['not','and','or']:
+            return False
+        query.remove('not')
+
+    while ('and' in query):
+        i = query.index('and')
+        if i+1 == len(query) or i==0 or len(query)< 3:
+            return False
+        if query[i+1] in ['and','or'] or query[i-1] in ['not','and','or']:
+            return False
+        t = query[i-1]
+        query.remove('and')
+        query.remove(t)
+
+    while ('or' in query):
+        i = query.index('or')
+        if i+1 == len(query) or i==0 or len(query)< 3:
+            return False
+        if query[i+1] in ['and','or'] or query[i-1] in ['not','and','or']:
+            return False
+        t = query[i-1]
+        query.remove('or')
+        query.remove(t)
+    return True
