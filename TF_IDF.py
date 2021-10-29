@@ -74,7 +74,7 @@ def cos_sim (query, documents):
     """
     import numpy as np
     if np.shape(query)[0] == np.shape(documents)[0]:
-        documents = np.swapaxes(documents, 0, 1)
+        documents = documents.transpose()
     enum = np.array([np.dot(query, documents[doc]) for doc in range(len(documents))])
     denom = np.array([vector_length(query) * vector_length(documents[doc]) for doc in range(len(documents))])
     cos = enum / denom
@@ -84,35 +84,34 @@ def query_preprocess(query,lang):
     stemmed_query = stem_text([query], lang)
     return stemmed_query
 
-def print_docs(cos,query,ans):
+def print_docs(cos,query,ans,lang):
     from nltk import PorterStemmer, WordNetLemmatizer
     ps = PorterStemmer()
     wnl = WordNetLemmatizer()
     
-    cos_list = cos.tolist()
-    cos = sorted(cos,reverse=True)
-    print ('Sorted documents in descending order:\n'
-           ,' '.join(['D'+str(cos_list.index(i)+1) for i in cos])
-           ,'\nMost accepted answer with the KeyWords in the query in uppercase:\n')
+    pre_text = 'Most accepted answer with a similarity of %.2f' %cos + r'% :'
     output = []
     stemmed_ans =  [(wnl.lemmatize(ps.stem(clean(term))),term) for term in ans.split() ]
     for term in stemmed_ans:
         if term[0] in query:
-            output.append(term[1].upper())
+            output.append('`'+term[1]+'`')
         else:
             output.append(term[1])
     output_text = ' '.join(output)
-    print(output_text)
-    return
+    answer = output_text
+    return pre_text, answer
 
-# stemmed_cleaned_en = stem_text(data_en, 'English')
-# unique_words_en = unique_terms(stemmed_cleaned_en)
-# tf_idf, idf, tf = TF_IDF (unique_words_en, stemmed_cleaned_en)
+def model(dataFrame,query,lang='English'):
+    _, ans, data = get_data(dataFrame)
+    stemmed_cleaned = stem_text(data,lang )
+    unique_words = unique_terms(stemmed_cleaned)
+    tf_idf, idf, _ = TF_IDF (unique_words, stemmed_cleaned)
 
-# query = query_preprocess('can i get covid-19 from unwashed vegetables','english')
-# qv = query_to_vector(query, idf, unique_words_en)
-# cos = cos_sim(qv, tf_idf)
+    q = query_preprocess(query,lang)
+    qv = query_to_vector(q, idf, unique_words)
+    cos = cos_sim(qv, tf_idf)
 
-# ans_index = cos.tolist().index(cos.max())
-# print_docs(cos,query,ans_en[ans_index])
+    ans_index = cos.tolist().index(cos.max())
+    answer = print_docs(cos.max(),query,ans[ans_index],lang)
 
+    return answer
