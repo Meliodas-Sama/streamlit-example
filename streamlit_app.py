@@ -1,38 +1,78 @@
-from collections import namedtuple
-import altair as alt
-import math
-import pandas as pd
+# Copyright 2018-2021 Streamlit Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import inspect
+import textwrap
+from collections import OrderedDict
+
 import streamlit as st
+from streamlit.logger import get_logger
+import pages
 
-"""
-# Welcome to Streamlit!
+LOGGER = get_logger(__name__)
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
+# Dictionary of
+# page_name -> (page_function, page_description)
+PAGES = OrderedDict(
+    [
+        ("Intro", (pages.intro, None)),
+        (
+            "Upload",
+            (
+                pages.upload,
+                """
+                Upload a csv file with two columns named (Questions, Answers)
+                """,
+            ),
+        ),
+        (
+            "COVID-19 Query",
+            (
+                pages.covid,
+                """
+                Here you can ask one of our pre-trained COVID-19 Models, after choosing one from the sidebar along with the language
+                """,
+            ),
+        ),
+    ]
+)
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+def run():
+    page_name = st.sidebar.selectbox("Choose a page", list(PAGES.keys()), 0)
+    page = PAGES[page_name][0]
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+    if page_name == "Intro":
+        show_code = False
+        st.write("# Welcome to our IR project! 👋")
+    else:
+        show_code = st.sidebar.checkbox("Show code", False)
+        st.markdown("# %s" % page_name)
+        description = PAGES[page_name][1]
+        if description:
+            st.write(description)
+        # Clear everything from the intro page.
+        # We only have 4 elements in the page so this is intentional overkill.
+        for i in range(10):
+            st.empty()
+
+    page()
+
+    if show_code:
+        st.markdown("## Code")
+        sourcelines, _ = inspect.getsourcelines(page)
+        st.code(textwrap.dedent("".join(sourcelines[1:])))
 
 
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
-
-    Point = namedtuple('Point', 'x y')
-    data = []
-
-    points_per_turn = total_points / num_turns
-
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
-
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+if __name__ == "__main__":
+    run()
