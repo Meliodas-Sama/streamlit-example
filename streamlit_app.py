@@ -32,7 +32,7 @@ PAGES = OrderedDict(
             (
                 pages.upload,
                 """
-                Upload a csv file with two columns named (Questions, Answers)
+                Upload a csv file with two columns named Questions, and Answers (or keep the same order)
                 """,
             ),
         ),
