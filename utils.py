@@ -1,7 +1,4 @@
-import re
-import numpy as np
-from nltk import ISRIStemmer, word_tokenize, PorterStemmer, WordNetLemmatizer
-from nltk.corpus import stopwords
+import streamlit as st
 
 def clean(text,lang = 'English'):
     """
@@ -88,3 +85,13 @@ def unique_terms(documents):
     unique_words.sort()
     return unique_words
 
+@st.cache
+def get_data(file):
+    import pandas as pd
+    dataf = pd.read_csv(file)
+    dataf.columns = ['Questions', 'Answers']
+    dic = dataf.to_dict()
+    ques  = list(dic['Questions'].values())
+    ans = list(dic['Answers'].values())
+    data = [ques[i]+' '+ans[i] for i in range(len(ans)) ]
+    return ques, ans, data
