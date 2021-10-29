@@ -1,4 +1,5 @@
 from utils import *
+import streamlit as st
 
 def Bool_Model (unique_words, documents):
     """
@@ -142,34 +143,34 @@ def print_docs(sim,query,ans,lang='English'):
     
     stemmer, _ = getStopWordsAndStemmer(lang)
     wnl = WordNetLemmatizer()
-    
-    sim_list = sim.tolist()
-    sim = sorted(sim,reverse=True)
-    print ('Sorted documents in descending order:\n'
-           ,' '.join(['D'+str(sim_list.index(i)+1) for i in sim])
-           ,'\nMost accepted answer with a similarity of',round(sim[0],2),'% with the query KeyWords in uppercase:\n')
+
+    pre_text = 'Most accepted answer with a similarity of %.2f' %sim + r'% :'
     output = []
-    stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term))),term) for term in ans.split() ]
+    stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split() ]
     for term in stemmed_ans:
-        if term[0] in query:
-            output.append(term[1].upper())
+        if term[0] in query and not term[0] in ['not', 'and', 'or']:
+            output.append('`'+term[1]+'`')
         else:
             output.append(term[1])
     output_text = ' '.join(output)
-    print(output_text)
-    return
+    return pre_text, output_text
 
-# stemmed_cleaned_en = stem_text(data_en, 'English')
-# unique_words_en = unique_terms(stemmed_cleaned_en)
-# model = Bool_Model (unique_words_en, stemmed_cleaned_en)
-# model_t = Bool_Model_t(unique_words_en, stemmed_cleaned_en)
+@st.cache
+def model(dataFrame,query,lang='English'):
+    import numpy as np
 
-# q = query_preprocess('not food or vegetables', 'english')
-# s = exBooleanSimilarity(q,model_t)
+    _, ans, data = get_data(dataFrame)
+    stemmed_cleaned = stem_text(data, lang)
+    unique_words = unique_terms(stemmed_cleaned)
+    model_t = Bool_Model_t(unique_words, stemmed_cleaned)
+
+    q = query_preprocess(query, lang)
+    s = exBooleanSimilarity(q,model_t)
 
 
-# s = np.array(s)
-# max_ind = s.tolist().index(s.max())
-# ans = ans_en[max_ind]
+    s = np.array(s)
+    max_ind = s.tolist().index(s.max())
+    ans = ans[max_ind]
 
-# print_docs(s,q,ans,'english')
+    answer = print_docs(s[max_ind],q,ans,lang)
+    return answer
