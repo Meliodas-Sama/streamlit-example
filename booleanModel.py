@@ -13,7 +13,7 @@ def Bool_Model (unique_words, documents):
                 model[t].append(doc)
     return model
 
-def Bool_Model_t (unique_words, documents):
+def Bool_Model_t (documents):
     """
     Builds a dictionary for documents, mapping each document with a list of its terms
     """
@@ -23,7 +23,7 @@ def Bool_Model_t (unique_words, documents):
         model[doc]= list(np.unique(documents[doc]))
     return model
 
-def query_preprocess(query,lang = 'English'):
+def query_preprocess(query,lang):
     from nltk import WordNetLemmatizer
 
     wnl = WordNetLemmatizer()
@@ -60,12 +60,12 @@ def print_docs(query,ans,lang):
     from nltk import WordNetLemmatizer
 
     wnl = WordNetLemmatizer()
-    stemmer ,_ = getStopWordsAndStemmer()
+    stemmer ,_ = getStopWordsAndStemmer(lang)
 
     output = []
     stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split()]
     for term in stemmed_ans:
-        if term[0] in query and not term[0] in ['not', 'and', 'or']:
+        if term[0] in query and not term[0] in ['not', 'and', 'or'] and len(term[0])>1:
             output.append('`'+term[1]+'`')
         else:
             output.append(term[1])
@@ -74,15 +74,17 @@ def print_docs(query,ans,lang):
     return pre_text, output_text
 
 @st.cache
-def model(dataFrame,query,lang='English'):
+def model(dataFrame,query,lang):
     _, ans, data = get_data(dataFrame)
     stemmed_cleaned_en = stem_text(data, lang)
-    unique_words_en = unique_terms(stemmed_cleaned_en)
-    model_t = Bool_Model_t(unique_words_en, stemmed_cleaned_en)
+    model_t = Bool_Model_t(stemmed_cleaned_en)
 
     q = query_preprocess(query, lang)
     sim = bool_sim(q,model_t)
-    ans = ans[sim.index(True)]
+    if True in sim:
+        ans = ans[sim.index(True)]
+    else:
+        return ('', 'There is no matching documents!! Try another query')
 
     answer = print_docs(q,ans,lang)
     return answer
