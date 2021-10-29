@@ -53,7 +53,7 @@ def upload():
     algo = st.sidebar.empty()
     inputQuery = st.empty()
     if uploadedFile:
-        st.write('Now you can choose the the lanuage and the algorithm from the sidebar')
+        st.write('Now you can choose the the language and the algorithm from the sidebar')
         language = st.sidebar.selectbox('Select query language',['English','Arabic'],0)
         algo = st.sidebar.selectbox('Select the algorithm',['Boolean','Extended Boolean','TF-IDF'],0)
         inputQuery = st.text_input('Enter your query here!','')
