@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from pandas.core.arrays import boolean
+import pandas
 
 
 def intro():
@@ -36,10 +35,11 @@ def intro():
         * **👈 Select a page from the dropdown on the left** to choose what to do!  
             * **Intro**: Current page  
             * **Upload**: To upload Q & A files  
-            * **Query Input**: Search the uploaded questions  
             * **COVID-19 Query**: Ask a question about COVID-19  
     
         Made with :heart: as a HomeWork for MWS_AIR by Ahmad_155511, Walid_164688
+        
+        [Visit our project repo on GitHub](https://github.com/Meliodas-Sama/streamlit-example)
         
     """
     )
@@ -47,30 +47,40 @@ def intro():
 def upload():
     import streamlit as st
     import pandas as pd
-
+    import booleanModel, extendedBooleanModel, TF_IDF
     uploadedFile = st.file_uploader('Upload your CSV file here:','csv')
     language = st.sidebar.empty()
     algo = st.sidebar.empty()
-    query = st.empty()
+    inputQuery = st.empty()
     if uploadedFile:
         st.write('Now you can choose the the lanuage and the algorithm from the sidebar')
         language = st.sidebar.selectbox('Select query language',['English','Arabic'],0)
         algo = st.sidebar.selectbox('Select the algorithm',['Boolean','Extended Boolean','TF-IDF'],0)
+        inputQuery = st.text_input('Enter your query here!','')
+        if inputQuery:
+            algos = {'Boolean':booleanModel.model,'Extended Boolean':extendedBooleanModel.model,'TF-IDF':TF_IDF.model}
+            text, answer = algos[algo](uploadedFile, inputQuery, language)
+            st.write(text)
+            st.markdown(answer)
+
         
 def covid():
     import streamlit as st
-    import pandas as pd
-    import altair as alt
-    import pickle
     import booleanModel, extendedBooleanModel, TF_IDF
 
 
     from urllib.error import URLError
 
-    inputQuery = st.text_input('Enter your query here!')
+    inputQuery = st.text_input('Enter your query here!','')
     language = st.sidebar.selectbox('Select query language',['English','Arabic'],0)
     algo = st.sidebar.selectbox('Select the algorithm',['Boolean','Extended Boolean','TF-IDF'],0)
  
     if inputQuery:
-        # @st.cache
-        st.write('Done')
+        if language == 'English':
+            url = 'https://github.com/Meliodas-Sama/streamlit-example/raw/master/covid_data/data_en.csv'
+        else:
+            url = 'https://github.com/Meliodas-Sama/streamlit-example/raw/master/covid_data/data_ar.csv'
+        algos = {'Boolean':booleanModel.model,'Extended Boolean':extendedBooleanModel.model,'TF-IDF':TF_IDF.model}
+        text, answer = algos[algo](url, inputQuery, language)
+        st.write(text)
+        st.markdown(answer)
