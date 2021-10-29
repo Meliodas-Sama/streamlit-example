@@ -1,4 +1,3 @@
-from numpy.core.fromnumeric import swapaxes
 from utils import *
 
 def Inverse_Document_Frequency (df, docs_count):
