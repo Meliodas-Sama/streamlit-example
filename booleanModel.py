@@ -24,16 +24,14 @@ def Bool_Model_t (unique_words, documents):
     return model
 
 def query_preprocess(query,lang = 'English'):
-    from nltk import PorterStemmer, WordNetLemmatizer
+    from nltk import WordNetLemmatizer
 
-    ps = PorterStemmer()
     wnl = WordNetLemmatizer()
-    
 
-    stop_words = set(stopwords.words(lang))
+    stemmer, stop_words  = getStopWordsAndStemmer(lang)
     stop_words = [w for w in stop_words if not w in ['and','or','not']]
     
-    st_query = [wnl.lemmatize(ps.stem(w)) for w in clean(query).split() if not w in stop_words and len(w)>1]
+    st_query = [wnl.lemmatize(stemmer.stem(w)) for w in clean(query,lang).split() if not w in stop_words and len(w)>1]
     return st_query
 
 def bool_sim (query, BModel):
@@ -58,32 +56,33 @@ def bool_sim (query, BModel):
         result.append(res)
     return result
 
-def print_docs(sim,query,ans):
-    from nltk import PorterStemmer, WordNetLemmatizer
-    ps = PorterStemmer()
+def print_docs(query,ans,lang):
+    from nltk import WordNetLemmatizer
+
     wnl = WordNetLemmatizer()
-    
-    print ('Accepted documents:\n'
-           ,' '.join(['D'+str(i) for i in range(len(sim)) if sim[i] == True])
-           ,'\nFirst accepted answer:\n')
+    stemmer ,_ = getStopWordsAndStemmer()
+
     output = []
-    stemmed_ans =  [(wnl.lemmatize(ps.stem(clean(term))),term) for term in ans.split() ]
+    stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split()]
     for term in stemmed_ans:
-        if term[0] in query:
-            output.append(term[1].upper())
+        if term[0] in query and not term[0] in ['not', 'and', 'or']:
+            output.append('`'+term[1]+'`')
         else:
             output.append(term[1])
     output_text = ' '.join(output)
-    print(output_text)
-    return
+    pre_text = 'Accepted answer:  '
+    return pre_text, output_text
 
-# stemmed_cleaned_en = stem_text(data_en, 'English')
-# unique_words_en = unique_terms(stemmed_cleaned_en)
-# model = Bool_Model (unique_words_en, stemmed_cleaned_en)
-# model_t = Bool_Model_t(unique_words_en, stemmed_cleaned_en)
+@st.cache
+def model(dataFrame,query,lang='English'):
+    _, ans, data = get_data(dataFrame)
+    stemmed_cleaned_en = stem_text(data, lang)
+    unique_words_en = unique_terms(stemmed_cleaned_en)
+    model_t = Bool_Model_t(unique_words_en, stemmed_cleaned_en)
 
-# q = query_preprocess('not food or vegetables', lang='english')
-# sim = bool_sim(q,model_t)
-# ans = ans_en[sim.index(True)]
+    q = query_preprocess(query, lang)
+    sim = bool_sim(q,model_t)
+    ans = ans[sim.index(True)]
 
-# print_docs(sim,q,ans)
+    answer = print_docs(q,ans,lang)
+    return answer
