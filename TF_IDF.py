@@ -1,3 +1,4 @@
+from numpy.core.fromnumeric import swapaxes
 from utils import *
 
 def Inverse_Document_Frequency (df, docs_count):
@@ -85,25 +86,25 @@ def query_preprocess(query,lang):
     return stemmed_query
 
 def print_docs(cos,query,ans,lang):
-    from nltk import PorterStemmer, WordNetLemmatizer
-    ps = PorterStemmer()
+    from nltk import WordNetLemmatizer
+    stemmer, _ = getStopWordsAndStemmer(lang)
     wnl = WordNetLemmatizer()
     
-    pre_text = 'Most accepted answer with a similarity of %.2f' %cos + r'% :'
+    pre_text = 'Most accepted answer with a cosine similarity of %.2f' %cos + r'% :'
     output = []
-    stemmed_ans =  [(wnl.lemmatize(ps.stem(clean(term))),term) for term in ans.split() ]
+    stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split() ]
     for term in stemmed_ans:
-        if term[0] in query:
-            output.append('`'+term[1]+'`')
+        if term[0] in query and len(term[0])>1:
+            output.append(' ` '+term[1]+' ` ')
         else:
             output.append(term[1])
     output_text = ' '.join(output)
     answer = output_text
     return pre_text, answer
 
-def model(dataFrame,query,lang='English'):
+def model(dataFrame,query,lang):
     _, ans, data = get_data(dataFrame)
-    stemmed_cleaned = stem_text(data,lang )
+    stemmed_cleaned = stem_text(data,lang)
     unique_words = unique_terms(stemmed_cleaned)
     tf_idf, idf, _ = TF_IDF (unique_words, stemmed_cleaned)
 
