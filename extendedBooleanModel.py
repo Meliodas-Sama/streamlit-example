@@ -38,7 +38,7 @@ def Bool_Model_t (unique_words, documents):
             tf[doc][t]/= max_tf
     return tf
 
-def query_preprocess(query,lang = 'English'):
+def query_preprocess(query,lang):
     """
     1. Initialize Word Net Lemmatizer and get stop words and Stemmer for the given language
     2. Removing the words ['and','or','not'] from the stop words so they don't get removed from the query
@@ -138,7 +138,7 @@ def exBooleanSimilarity (query, BModel):
         result.append(res)
     return result
 
-def print_docs(sim,query,ans,lang='English'):
+def print_docs(sim,query,ans,lang):
     from nltk import WordNetLemmatizer
     
     stemmer, _ = getStopWordsAndStemmer(lang)
@@ -148,7 +148,7 @@ def print_docs(sim,query,ans,lang='English'):
     output = []
     stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split() ]
     for term in stemmed_ans:
-        if term[0] in query and not term[0] in ['not', 'and', 'or']:
+        if term[0] in query and not term[0] in ['not', 'and', 'or'] and len(term[0])>1:
             output.append('`'+term[1]+'`')
         else:
             output.append(term[1])
@@ -156,7 +156,7 @@ def print_docs(sim,query,ans,lang='English'):
     return pre_text, output_text
 
 @st.cache
-def model(dataFrame,query,lang='English'):
+def model(dataFrame,query,lang):
     import numpy as np
 
     _, ans, data = get_data(dataFrame)
