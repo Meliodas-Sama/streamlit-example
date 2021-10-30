@@ -45,14 +45,11 @@ def query_preprocess(query,lang):
     3. Clean and stem the query to a list of terms
     4. Return the query list
     """
-    from nltk import WordNetLemmatizer
     
-    stemmer, stop_words = getStopWordsAndStemmer(lang)
-    wnl = WordNetLemmatizer()
+    stemmer, wnl, _ = getStopWordsAndStemmer(lang)
     
-    stop_words = [w for w in stop_words if not w in ['and','or','not']]
     
-    st_query = [wnl.lemmatize(stemmer.stem(w)) for w in clean(query,lang).split() if not w in stop_words and len(w)>1]
+    st_query = [wnl.lemmatize(stemmer.stem(w)) for w in clean(query,lang).split()]
     return st_query
 
 def and_sim(x):
@@ -111,7 +108,7 @@ def similarity(querySim):
                 break
         querySim[index] = and_sim(and_temp)
 
-    or_temp = [v for v in querySim if not v=='or']
+    or_temp = [v for v in querySim if not v == 'or']
     querySim = or_sim(or_temp)
     return querySim
 
@@ -139,16 +136,14 @@ def exBooleanSimilarity (query, BModel):
     return result
 
 def print_docs(sim,query,ans,lang):
-    from nltk import WordNetLemmatizer
     
-    stemmer, _ = getStopWordsAndStemmer(lang)
-    wnl = WordNetLemmatizer()
+    stemmer, wnl, stop_words = getStopWordsAndStemmer(lang)
 
     pre_text = 'Most accepted answer with a similarity of %.2f' %sim + r'% :'
     output = []
     stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split() ]
     for term in stemmed_ans:
-        if term[0] in query and not term[0] in ['not', 'and', 'or'] and len(term[0])>1:
+        if term[0] in query and not term[0] in ['not', 'and', 'or'] and len(term[0])>1 and not term[1] in stop_words:
             output.append('`'+term[1]+'`')
         else:
             output.append(term[1])
