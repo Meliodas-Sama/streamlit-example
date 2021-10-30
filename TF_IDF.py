@@ -1,3 +1,4 @@
+from numpy import NaN
 from utils import *
 
 def Inverse_Document_Frequency (df, docs_count):
@@ -101,6 +102,8 @@ def print_docs(cos,query,ans,lang):
     return pre_text, answer
 
 def model(dataFrame,query,lang):
+    import numpy as np
+
     _, ans, data = get_data(dataFrame)
     stemmed_cleaned = stem_text(data,lang)
     unique_words = unique_terms(stemmed_cleaned)
@@ -109,7 +112,10 @@ def model(dataFrame,query,lang):
     q = query_preprocess(query,lang)
     qv = query_to_vector(q, idf, unique_words)
     cos = cos_sim(qv, tf_idf)
-
+    
+    if np.isnan(cos).all():
+        return ('', 'There are no matching documents!! Try another query')
+    
     ans_index = cos.tolist().index(cos.max())
     answer = print_docs(cos.max(),q,ans[ans_index],lang)
 
