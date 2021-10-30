@@ -37,13 +37,16 @@ def clean(text,lang):
         text = text.strip()
         return text
 
+@st.cache
 def getStopWordsAndStemmer(lang):
     import nltk
-    from nltk import ISRIStemmer, PorterStemmer
+    from nltk import ISRIStemmer, PorterStemmer, WordNetLemmatizer
     from nltk.corpus import stopwords
+    
     nltk.download('wordnet')
     nltk.download('stopwords')
-    
+
+    wnl = WordNetLemmatizer()
     if lang.lower() == 'english':
         stemmer = PorterStemmer()
         stop_words = set(stopwords.words(lang.lower()))
@@ -53,7 +56,8 @@ def getStopWordsAndStemmer(lang):
         with open("Arabic_StopWords.txt", "r",encoding='utf-8') as Arabic_StopWords:
             stop_words = [line for line in Arabic_StopWords]
         stop_words = set(stop_words + stopwords.words(lang.lower()))
-    return stemmer, stop_words
+    
+    return stemmer, wnl, stop_words
 
 def stem_text(data,lang):
     """
@@ -62,11 +66,9 @@ def stem_text(data,lang):
     3. Clean the documents and then tokenize them using split method
        then stem the documents and remove stop words and the words that have 1 character (letter)
     """
-    from nltk import WordNetLemmatizer
-        
-    wnl = WordNetLemmatizer()
+
     
-    stemmer, stop_words = getStopWordsAndStemmer(lang)
+    stemmer, wnl , stop_words = getStopWordsAndStemmer(lang)
     
     stemmed_cleaned = []
     for document in data:
