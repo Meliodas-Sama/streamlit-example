@@ -166,6 +166,8 @@ def model(dataFrame,query,lang):
     s = np.array(s)
     max_ind = s.tolist().index(s.max())
     ans = ans[max_ind]
-
+    if s.max() == 0:
+        return ('', 'There are no matching documents!! Try another query')
+    
     answer = print_docs(s[max_ind],q,ans,lang)
     return answer
