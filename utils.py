@@ -37,7 +37,6 @@ def clean(text,lang):
         text = text.strip()
         return text
 
-@st.cache
 def getStopWordsAndStemmer(lang):
     from nltk import ISRIStemmer, PorterStemmer
     from nltk.corpus import stopwords
