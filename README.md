@@ -11,8 +11,8 @@ our pre-trained Models about COVID-19 questions.
 To install _Streamlit_ alone:  
 `pip install streamlit`  
 
-To install  the requirements:
-pip install -r /path/to/requirements.txt  
+To install  the requirements:  
+'pip install -r /path/to/requirements.txt'  
 
 Use `streamlit run streamlit_app.py` to run the project on http://localhost:8501
 
