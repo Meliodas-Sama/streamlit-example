@@ -158,6 +158,8 @@ def model(dataFrame,query,lang):
     model_t = Bool_Model_t(unique_words, stemmed_cleaned)
 
     q = query_preprocess(query, lang)
+    if len(q) == 0:
+        return ('', 'There are no matching documents!! Try another query')
     s = exBooleanSimilarity(q,model_t)
 
 
