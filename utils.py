@@ -38,8 +38,11 @@ def clean(text,lang):
         return text
 
 def getStopWordsAndStemmer(lang):
+    import nltk
     from nltk import ISRIStemmer, PorterStemmer
     from nltk.corpus import stopwords
+    nltk.download('wordnet')
+    nltk.download('stopwords')
     
     if lang.lower() == 'english':
         stemmer = PorterStemmer()
