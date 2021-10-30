@@ -92,6 +92,7 @@ def covid():
 
             if algo in ['Boolean','Extended Boolean'] and not utils.checkBoolQuery(inputQuery.lower().split()):
                 st.markdown("""Please enter a valid Boolean query containing terms and boolean operators [Not,And,Or]  
+                
                 e.x `not food or vegetables`""")
             else:
                 algos = {'Boolean':booleanModel.model,'Extended Boolean':extendedBooleanModel.model,'TF-IDF':TF_IDF.model}
