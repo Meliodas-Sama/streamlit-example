@@ -73,6 +73,8 @@ def model(dataFrame,query,lang):
     model_t = Bool_Model_t(stemmed_cleaned_en)
 
     q = query_preprocess(query, lang)
+    if len(q) == 0:
+        return ('', 'There are no matching documents!! Try another query')
     sim = bool_sim(q,model_t)
     
     if True in sim:
