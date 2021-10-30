@@ -65,7 +65,7 @@ def run():
             st.write(description)
         # Clear everything from the intro page.
         # We only have 4 elements in the page so this is intentional overkill.
-        for i in range(15):
+        for i in range(20):
             st.empty()
 
     page()
