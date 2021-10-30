@@ -24,14 +24,10 @@ def Bool_Model_t (documents):
     return model
 
 def query_preprocess(query,lang):
-    from nltk import WordNetLemmatizer
 
-    wnl = WordNetLemmatizer()
-
-    stemmer, stop_words  = getStopWordsAndStemmer(lang)
-    stop_words = [w for w in stop_words if not w in ['and','or','not']]
+    stemmer, wnl, _ = getStopWordsAndStemmer(lang)
     
-    st_query = [wnl.lemmatize(stemmer.stem(w)) for w in clean(query,lang).split() if not w in stop_words and len(w)>1]
+    st_query = [wnl.lemmatize(stemmer.stem(w)) for w in clean(query,lang).split()]
     return st_query
 
 def bool_sim (query, BModel):
@@ -57,15 +53,13 @@ def bool_sim (query, BModel):
     return result
 
 def print_docs(query,ans,lang):
-    from nltk import WordNetLemmatizer
 
-    wnl = WordNetLemmatizer()
-    stemmer ,_ = getStopWordsAndStemmer(lang)
+    stemmer, wnl, stop_words = getStopWordsAndStemmer(lang)
 
     output = []
     stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split()]
     for term in stemmed_ans:
-        if term[0] in query and not term[0] in ['not', 'and', 'or'] and len(term[0])>1:
+        if term[0] in query and not term[0] in ['not', 'and', 'or'] and len(term[0])>1 and not term[1] in stop_words:
             output.append('`'+term[1]+'`')
         else:
             output.append(term[1])
