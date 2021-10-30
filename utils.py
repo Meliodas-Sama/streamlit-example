@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit.legacy_caching.caching import cache
 
 def clean(text,lang):
     """
@@ -45,13 +44,13 @@ def getStopWordsAndStemmer(lang):
     
     if lang.lower() == 'english':
         stemmer = PorterStemmer()
-        stop_words = set(stopwords.words(lang))
+        stop_words = set(stopwords.words(lang.lower()))
     
     elif lang.lower() == 'arabic':
         stemmer = ISRIStemmer()
         with open("Arabic_StopWords.txt", "r",encoding='utf-8') as Arabic_StopWords:
             stop_words = [line for line in Arabic_StopWords]
-        stop_words = set(stop_words + stopwords.words(lang))
+        stop_words = set(stop_words + stopwords.words(lang.lower()))
     return stemmer, stop_words
 
 def stem_text(data,lang):
