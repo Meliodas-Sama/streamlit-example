@@ -67,7 +67,6 @@ def print_docs(query,ans,lang):
     pre_text = 'Accepted answer:  '
     return pre_text, output_text
 
-@st.cache
 def model(dataFrame,query,lang):
     _, ans, data = get_data(dataFrame)
     stemmed_cleaned_en = stem_text(data, lang)
