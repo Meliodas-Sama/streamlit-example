@@ -23,7 +23,7 @@ import pages
 
 LOGGER = get_logger(__name__)
 
-nltk.download('stopwords')
+
 
 # Dictionary of
 # page_name -> (page_function, page_description)
@@ -52,6 +52,7 @@ PAGES = OrderedDict(
 )
 
 def run():
+    nltk.download('stopwords',)
     page_name = st.sidebar.selectbox("Choose a page", list(PAGES.keys()), 0)
     page = PAGES[page_name][0]
 
