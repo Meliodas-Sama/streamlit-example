@@ -63,14 +63,13 @@ def upload():
             algo = st.sidebar.selectbox('Select the Algorithm',['Boolean','Extended Boolean','TF-IDF'],0)
             inputQuery = st.text_input('Enter your query here! (Boolean or Normal)','')
             if inputQuery:
-                if algo in ['Boolean','Extended Boolean'] and utils.checkBoolQuery(inputQuery.lower().split()):
+                if algo in ['Boolean','Extended Boolean'] and not utils.checkBoolQuery(inputQuery.lower().split()):
+                    st.markdown('Please enter a valid Boolean query containing terms and boolean operators [Not,And,Or] e.x `not food or vegetables`')
+                else:
                     algos = {'Boolean':booleanModel.model,'Extended Boolean':extendedBooleanModel.model,'TF-IDF':TF_IDF.model}
                     text, answer = algos[algo](uploadedFile, inputQuery, language)
                     st.write(text)
                     st.markdown(answer)
-                else:
-                    st.markdown('Please enter a valid Boolean query containing terms and boolean operators [Not,And,Or] e.x `not food or vegetables`')
-        
 def covid():
     import streamlit as st
     import booleanModel, extendedBooleanModel, TF_IDF, utils
@@ -91,11 +90,11 @@ def covid():
             else:
                 url = 'https://github.com/Meliodas-Sama/streamlit-example/raw/master/covid_data/data_ar.csv'
 
-            if algo in ['Boolean','Extended Boolean'] and utils.checkBoolQuery(inputQuery.lower().split()):
+            if algo in ['Boolean','Extended Boolean'] and not utils.checkBoolQuery(inputQuery.lower().split()):
+                st.markdown("""Please enter a valid Boolean query containing terms and boolean operators [Not,And,Or]  
+                e.x `not food or vegetables`""")
+            else:
                 algos = {'Boolean':booleanModel.model,'Extended Boolean':extendedBooleanModel.model,'TF-IDF':TF_IDF.model}
                 text, answer = algos[algo](url, inputQuery, language)
                 st.write(text)
                 st.markdown(answer)
-            else:
-                st.markdown("""Please enter a valid Boolean query containing terms and boolean operators [Not,And,Or]  
-                e.x `not food or vegetables`""")
