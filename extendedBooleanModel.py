@@ -1,5 +1,4 @@
 from utils import *
-import streamlit as st
 
 def Bool_Model (unique_words, documents):
     """
@@ -150,7 +149,6 @@ def print_docs(sim,query,ans,lang):
     output_text = ' '.join(output)
     return pre_text, output_text
 
-@st.cache
 def model(dataFrame,query,lang):
     import numpy as np
 
