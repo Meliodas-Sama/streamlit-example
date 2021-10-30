@@ -37,7 +37,7 @@ def clean(text,lang):
         text = text.strip()
         return text
 
-@st.cache
+
 def getStopWordsAndStemmer(lang):
     import nltk
     from nltk import ISRIStemmer, PorterStemmer, WordNetLemmatizer
