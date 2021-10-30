@@ -85,16 +85,15 @@ def query_preprocess(query,lang):
     return stemmed_query
 
 def print_docs(cos,query,ans,lang):
-    from nltk import WordNetLemmatizer
-    stemmer, _ = getStopWordsAndStemmer(lang)
-    wnl = WordNetLemmatizer()
-    
+
+    stemmer, wnl, _ = getStopWordsAndStemmer(lang)
+
     pre_text = 'Most accepted answer with a cosine similarity of %.2f' %cos + r'% :'
     output = []
     stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split() ]
     for term in stemmed_ans:
-        if term[0] in query and len(term[0])>1:
-            output.append(' ` '+term[1]+' ` ')
+        if term[0] in query:
+            output.append('`'+term[1]+'`')
         else:
             output.append(term[1])
     output_text = ' '.join(output)
@@ -112,6 +111,6 @@ def model(dataFrame,query,lang):
     cos = cos_sim(qv, tf_idf)
 
     ans_index = cos.tolist().index(cos.max())
-    answer = print_docs(cos.max(),query,ans[ans_index],lang)
+    answer = print_docs(cos.max(),q,ans[ans_index],lang)
 
     return answer
