@@ -15,9 +15,6 @@
 import inspect
 import textwrap
 from collections import OrderedDict
-from nltk.corpus import stopwords
-from nltk import ISRIStemmer, PorterStemmer, WordNetLemmatizer
-
 
 import streamlit as st
 from streamlit.logger import get_logger
@@ -37,7 +34,7 @@ PAGES = OrderedDict(
             (
                 pages.upload,
                 """
-                Upload a csv file with two columns named Questions, and Answers (or keep the same order)
+                #### Here you can upload a csv file (from a valid URL, or from your files):  
                 """,
             ),
         ),
@@ -46,7 +43,7 @@ PAGES = OrderedDict(
             (
                 pages.covid,
                 """
-                Here you can ask one of our pre-trained COVID-19 Models, after choosing one from the sidebar along with the language
+                Here you can ask one of our pre-trained COVID-19 Models, after choosing one from the sidebar along with the language.
                 """,
             ),
         ),
@@ -68,7 +65,7 @@ def run():
             st.write(description)
         # Clear everything from the intro page.
         # We only have 4 elements in the page so this is intentional overkill.
-        for i in range(10):
+        for i in range(15):
             st.empty()
 
     page()
