@@ -75,10 +75,11 @@ def model(dataFrame,query,lang):
 
     q = query_preprocess(query, lang)
     sim = bool_sim(q,model_t)
+    
     if True in sim:
         ans = ans[sim.index(True)]
     else:
-        return ('', 'There is no matching documents!! Try another query')
+        return ('', 'There are no matching documents!! Try another query')
 
     answer = print_docs(q,ans,lang)
     return answer
