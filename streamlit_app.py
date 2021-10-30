@@ -16,6 +16,8 @@ import inspect
 import textwrap
 from collections import OrderedDict
 from nltk.corpus import stopwords
+from nltk import ISRIStemmer, PorterStemmer, WordNetLemmatizer
+
 
 import streamlit as st
 from streamlit.logger import get_logger
