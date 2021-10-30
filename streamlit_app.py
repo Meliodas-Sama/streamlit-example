@@ -15,7 +15,7 @@
 import inspect
 import textwrap
 from collections import OrderedDict
-import nltk
+from nltk.corpus import stopwords
 
 import streamlit as st
 from streamlit.logger import get_logger
@@ -52,7 +52,6 @@ PAGES = OrderedDict(
 )
 
 def run():
-    nltk.download('stopwords',)
     page_name = st.sidebar.selectbox("Choose a page", list(PAGES.keys()), 0)
     page = PAGES[page_name][0]
 
