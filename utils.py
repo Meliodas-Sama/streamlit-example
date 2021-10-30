@@ -135,4 +135,6 @@ def checkBoolQuery(query):
         t = query[i-1]
         query.remove('or')
         query.remove(t)
+        if len(query)>1:
+            return False
     return True
