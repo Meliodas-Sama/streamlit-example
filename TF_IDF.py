@@ -85,19 +85,28 @@ def query_preprocess(query,lang):
     return stemmed_query
 
 def print_docs(cos,query,ans,lang):
+    import numpy as np
 
     stemmer, wnl, _ = getStopWordsAndStemmer(lang)
-
-    pre_text = 'Most accepted answer with a cosine similarity of %.2f' %cos + r'% :'
-    output = []
-    stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split() ]
-    for term in stemmed_ans:
-        if term[0] in query:
-            output.append('`'+term[1]+'`')
-        else:
-            output.append(term[1])
-    output_text = ' '.join(output)
-    answer = output_text
+    pre_text = []
+    answer = []
+    indecies = np.argsort(cos).tolist()
+    indecies.reverse()
+    pre_text.append('Most accepted answer with a cosine similarity of %.2f' %cos[indecies[0]] + r'% :')
+    for i in indecies:
+        if cos[i] > 0:
+            output = []
+            stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans[i].split() ]
+            for term in stemmed_ans:
+                if term[0] in query:
+                    output.append('`'+term[1]+'`')
+                else:
+                    output.append(term[1])
+            output_text = ' '.join(output)
+            answer.append(output_text)
+            if i-1 < len(indecies):
+                pre_text.append("""----------------------------------------------------------------  
+                Answer with a cosine similarity of %.2f""" %cos[i] + r'% :')
     return pre_text, answer
 
 def model(dataFrame,query,lang):
@@ -113,9 +122,8 @@ def model(dataFrame,query,lang):
     cos = cos_sim(qv, tf_idf)
     
     if np.isnan(cos).all():
-        return ('', 'There are no matching documents!! Try another query')
+        return ([''], ['There are no matching documents!! Try another query or language'])
     
-    ans_index = cos.tolist().index(cos.max())
-    answer = print_docs(cos.max(),q,ans[ans_index],lang)
+    pre_text, answer = print_docs(cos,q,ans,lang)
 
-    return answer
+    return pre_text, answer
