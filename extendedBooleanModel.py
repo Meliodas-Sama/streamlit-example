@@ -144,7 +144,7 @@ def print_docs(sim,query,ans,lang):
     indecies.reverse()
     pre_text.append('Most accepted answer with a similarity of %.2f' %sim[indecies[0]] + r'% :')
     for i in range(len(indecies)):
-        if sim[indecies[i]] > 0 :
+        if round(sim[indecies[i]],2) > 0 :
             output = []
             stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans[indecies[i]].split() ]
             for term in stemmed_ans:
