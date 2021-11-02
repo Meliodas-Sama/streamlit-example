@@ -135,19 +135,29 @@ def exBooleanSimilarity (query, BModel):
     return result
 
 def print_docs(sim,query,ans,lang):
-    
-    stemmer, wnl, stop_words = getStopWordsAndStemmer(lang)
+    import numpy as np
 
-    pre_text = 'Most accepted answer with a similarity of %.2f' %sim + r'% :'
-    output = []
-    stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split() ]
-    for term in stemmed_ans:
-        if term[0] in query and not term[0] in ['not', 'and', 'or'] and len(term[0])>1 and not term[1] in stop_words:
-            output.append('`'+term[1]+'`')
-        else:
-            output.append(term[1])
-    output_text = ' '.join(output)
-    return pre_text, output_text
+    stemmer, wnl, _ = getStopWordsAndStemmer(lang)
+    pre_text = []
+    answer = []
+    indecies = np.argsort(sim).tolist()
+    indecies.reverse()
+    pre_text.append('Most accepted answer with a similarity of %.2f' %sim[indecies[0]] + r'% :')
+    for i in indecies:
+        if sim[i] > 0 :
+            output = []
+            stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans[i].split() ]
+            for term in stemmed_ans:
+                if term[0] in query:
+                    output.append('`'+term[1]+'`')
+                else:
+                    output.append(term[1])
+            output_text = ' '.join(output)
+            answer.append(output_text)
+            if i-1 < len(indecies):
+                pre_text.append("""----------------------------------------------------------------  
+                Answer with a similarity of %.2f""" %sim[i] + r'% :')
+    return pre_text, answer
 
 def model(dataFrame,query,lang):
     import numpy as np
@@ -159,15 +169,13 @@ def model(dataFrame,query,lang):
 
     q = query_preprocess(query, lang)
     if len(q) == 0:
-        return ('', 'There are no matching documents!! Try another query')
+        return ([''], ['There are no matching documents!! Try another query or language'])
     s = exBooleanSimilarity(q,model_t)
 
 
     s = np.array(s)
-    max_ind = s.tolist().index(s.max())
-    ans = ans[max_ind]
     if s.max() == 0:
-        return ('', 'There are no matching documents!! Try another query')
+        return ([''], ['There are no matching documents!! Try another query or language'])
     
-    answer = print_docs(s[max_ind],q,ans,lang)
-    return answer
+    pre_text, answer = print_docs(s,q,ans,lang)
+    return pre_text, answer
