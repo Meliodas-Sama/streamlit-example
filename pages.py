@@ -21,7 +21,7 @@ def intro():
 
     st.markdown(
         """
-        ##### Using **_Streamlit_**, **_NLTk_**, and **_RE_** **_Python_** libraries our project can:
+        ##### Using **_Streamlit_**, **_Numpy_**, **_NLTk_**, and **_RE_** **_Python_** libraries our project can:
         
         * Index a given set of questions and answers to build a mini search-engine using one of the following models:
             * Boolean Model
