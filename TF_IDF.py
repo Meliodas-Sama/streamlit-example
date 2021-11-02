@@ -106,7 +106,7 @@ def print_docs(cos,query,ans,lang):
             answer.append(output_text)
             if i-1 < len(indecies):
                 pre_text.append("""---------------------------------  
-                Answer with a cosine similarity of %.2f""" %cos[i] + r'% :')
+                Answer with a cosine similarity of %.2f""" %cos[indecies[i]] + r'% :')
     return pre_text, answer
 
 def model(dataFrame,query,lang):
