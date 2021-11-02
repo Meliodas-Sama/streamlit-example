@@ -156,7 +156,7 @@ def print_docs(sim,query,ans,lang):
             answer.append(output_text)
             if i-1 < len(indecies):
                 pre_text.append("""----------------------------------------------------------------  
-                Answer with a similarity of %.2f""" %sim[indecies[i]] + r'% :')
+                Answer with a similarity of %.2f""" %sim[indecies[i+1]] + r'% :')
     return pre_text, answer
 
 def model(dataFrame,query,lang):
