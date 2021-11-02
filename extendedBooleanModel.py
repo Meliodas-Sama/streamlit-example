@@ -143,10 +143,10 @@ def print_docs(sim,query,ans,lang):
     indecies = np.argsort(sim).tolist()
     indecies.reverse()
     pre_text.append('Most accepted answer with a similarity of %.2f' %sim[indecies[0]] + r'% :')
-    for i in indecies:
-        if sim[i] > 0 :
+    for i in range(len(indecies)):
+        if sim[indecies[i]] > 0 :
             output = []
-            stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans[i].split() ]
+            stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans[indecies[i]].split() ]
             for term in stemmed_ans:
                 if term[0] in query:
                     output.append('`'+term[1]+'`')

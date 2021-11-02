@@ -71,7 +71,8 @@ def print_docs(sim,query,ans,lang):
             output_text = ' '.join(output)
             answer.append(output_text)
             if i-1 < len(sim):
-                pre_text.append('Accepted Answer N.%i' %(i+2))
+                pre_text.append("""----------------------------------------------------------------  
+                Accepted Answer N.%i""" %(i+2))
     return pre_text, answer 
 
 def model(dataFrame,query,lang):

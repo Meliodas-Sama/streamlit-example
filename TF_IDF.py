@@ -93,10 +93,10 @@ def print_docs(cos,query,ans,lang):
     indecies = np.argsort(cos).tolist()
     indecies.reverse()
     pre_text.append('Most accepted answer with a cosine similarity of %.2f' %cos[indecies[0]] + r'% :')
-    for i in indecies:
-        if cos[i] > 0:
+    for i in range (len(indecies)):
+        if cos[indecies[i]] > 0:
             output = []
-            stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans[i].split() ]
+            stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans[indecies[i]].split() ]
             for term in stemmed_ans:
                 if term[0] in query:
                     output.append('`'+term[1]+'`')
@@ -105,7 +105,7 @@ def print_docs(cos,query,ans,lang):
             output_text = ' '.join(output)
             answer.append(output_text)
             if i-1 < len(indecies):
-                pre_text.append("""----------------------------------------------------------------  
+                pre_text.append("""---------------------------------  
                 Answer with a cosine similarity of %.2f""" %cos[i] + r'% :')
     return pre_text, answer
 

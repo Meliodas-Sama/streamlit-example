@@ -68,8 +68,11 @@ def upload():
                 else:
                     algos = {'Boolean':booleanModel.model,'Extended Boolean':extendedBooleanModel.model,'TF-IDF':TF_IDF.model}
                     text, answer = algos[algo](uploadedFile, inputQuery, language)
-                    st.write(text)
-                    st.markdown(answer)
+                    for i in range(len(answer)):
+                        st.write(text[i])
+                        if i-1 < len(answer):
+                            st.markdown(answer[i])
+
 def covid():
     import streamlit as st
     import booleanModel, extendedBooleanModel, TF_IDF, utils
@@ -98,5 +101,7 @@ def covid():
             else:
                 algos = {'Boolean':booleanModel.model,'Extended Boolean':extendedBooleanModel.model,'TF-IDF':TF_IDF.model}
                 text, answer = algos[algo](url, inputQuery, language)
-                st.write(text)
-                st.markdown(answer)
+                for i in range(len(answer)):
+                    st.write(text[i])
+                    if i-1 < len(answer):
+                        st.markdown(answer[i])
