@@ -52,20 +52,28 @@ def bool_sim (query, BModel):
         result.append(res)
     return result
 
-def print_docs(query,ans,lang):
+def print_docs(sim,query,ans,lang):
 
-    stemmer, wnl, stop_words = getStopWordsAndStemmer(lang)
+    stemmer, wnl, _ = getStopWordsAndStemmer(lang)
+    pre_text = []
+    answer = []
 
-    output = []
-    stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans.split()]
-    for term in stemmed_ans:
-        if term[0] in query and not term[0] in ['not', 'and', 'or'] and len(term[0])>1 and not term[1] in stop_words:
-            output.append('`'+term[1]+'`')
-        else:
-            output.append(term[1])
-    output_text = ' '.join(output)
-    pre_text = 'Accepted answer:  '
-    return pre_text, output_text
+    pre_text.append('Accepted answer N.1:')
+    for i in range( len(sim)):
+        if sim[i]==True:
+            output = []
+            stemmed_ans =  [(wnl.lemmatize(stemmer.stem(clean(term,lang))),term) for term in ans[i].split() ]
+            for term in stemmed_ans:
+                if term[0] in query:
+                    output.append('`'+term[1]+'`')
+                else:
+                    output.append(term[1])
+            output_text = ' '.join(output)
+            answer.append(output_text)
+            if i-1 < len(sim):
+                pre_text.append("""----------------------------------------------------------------  
+                Accepted Answer N.%i""" %(i+2))
+    return pre_text, answer 
 
 def model(dataFrame,query,lang):
     _, ans, data = get_data(dataFrame)
@@ -74,13 +82,11 @@ def model(dataFrame,query,lang):
 
     q = query_preprocess(query, lang)
     if len(q) == 0:
-        return ('', 'There are no matching documents!! Try another query')
+        return ([''], ['There are no matching documents!! Try another query'])
     sim = bool_sim(q,model_t)
     
-    if True in sim:
-        ans = ans[sim.index(True)]
-    else:
-        return ('', 'There are no matching documents!! Try another query')
+    if not True in sim:
+        return ([''], ['There are no matching documents!! Try another query'])
 
-    answer = print_docs(q,ans,lang)
-    return answer
+    pre_text, answer = print_docs(sim,q,ans,lang)
+    return pre_text, answer
